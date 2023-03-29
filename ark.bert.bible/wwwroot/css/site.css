@@ -1,0 +1,59 @@
+body {
+    margin: 0 auto;
+    font-size: 16px; /*equivale a 1 em*/
+}
+
+nav {
+    background-color: #eeeeee;
+    height: 64px;
+    line-height: 64px;
+}
+
+.container {
+    display: flex;
+    display: -webkit-flex;
+    flex-flow: row wrap;
+    -webkit-flex-flow: row wrap;
+    clear: both;
+}
+
+.c1, .c2, .c3 {
+    width: 100%;
+}
+
+.c1 {
+    background-color: rgb(24,115, 209);
+    height: 100%;
+}
+
+.c2 {
+    background-color: rgb(41,63,121);
+    height: 100%;
+}
+
+.c3 {
+    background-color: rgb(136,154,224);
+    height: 100%;
+}
+
+@media (min-width:500px) {
+    .c1, .c2, .c3 {
+        width: 33.33%;
+    }
+}
+
+@media (min-width:800px) {
+    .c2, .c3, .c3 {
+        width: 33.33%;
+    }
+}
+
+.highlight {
+    background-color: yellow;
+}
+
+[contenteditable=true]:empty:before {
+    content: attr(placeholder);
+    pointer-events: none;
+    display: block; /* For Firefox */
+}

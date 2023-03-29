@@ -1,0 +1,138 @@
+﻿@{
+    Layout = null;
+}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Column-Drop</title>
+    <meta name="viewport" content="width=device-width,inicial-scale=1">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        This is bert based trained model, to validate Bible the Q&A for bible context (Only KJV Supported)
+        <br />
+        LImitations: Only 200+ words supported in context, so when you choose chapter we automatically trim only the limited context
+    </div>
+    <form method="post">
+        <div class="container">
+            <section class="c1">
+                <h2>Context (Select Chapter)</h2>
+                <span class="highlight">Yellow highlihgted is the context text</span> <br /><br />
+                <select name="book" id="book" onchange="this.form.submit()">
+                    @foreach (var v in (Dictionary<string, Dictionary<int, List<Book>>>)ViewBag.Bible)
+                    {
+                        <option selected="@(v.Key == ViewBag.book)" value="@v.Key">@v.Key</option>
+                    }
+                </select>
+                <select name="chapter" id="chapter" onchange="this.form.submit()">
+                    @foreach (var v in (Dictionary<int, List<Book>>)((Dictionary<string, Dictionary<int, List<Book>>>)ViewBag.Bible)[ViewBag.book])
+                    {
+                        <option selected="@(v.Key == ViewBag.chapter)" value="@v.Key">@v.Key</option>
+                    }
+                </select>
+                <br />
+                <div>
+                    @foreach (var v in (List<Book>)((Dictionary<int, List<Book>>)((Dictionary<string, Dictionary<int, List<Book>>>)ViewBag.Bible)[ViewBag.book])[ViewBag.chapter])
+                    {
+                        <p class="verse">
+                            @v.t
+                        </p>
+                    }
+                </div>
+            </section>
+            <section class="c2">
+                <h2>Questions</h2>
+                <div class="question-contain">
+                    @if (ViewBag.book == "Psalms" && ViewBag.chapter == 23)
+                    {
+                        <div style="position:relative;">
+                            <p class="question" placeholder="who is my shepherd?" contenteditable="true"></p>
+                            <span class="rem-ques" style="cursor:pointer;position:absolute;top: 5px;right:5px;width: 20px;height:20px;border-radius:50%;background-image:url(/img/delete_.png);background-size: contain;background-repeat: no-repeat;display:inline-block;"></span>
+                        </div>
+                        <div style="position:relative;">
+                            <p class="question" placeholder="Where will I dwell?" contenteditable="true"></p>
+                            <span class="rem-ques" style="cursor:pointer;position:absolute;top: 5px;right:5px;width: 20px;height:20px;border-radius:50%;background-image:url(/img/delete_.png);background-size: contain;background-repeat: no-repeat;display:inline-block;"></span>
+                        </div>
+                    }
+                    <div class="quest-cc">
+                    </div>
+                    <div style="position:relative;">
+                        <input type="button" value="Check" id="check" />
+                        <span id="add-quest" style="cursor:pointer;position:absolute;top: 5px;right:15px;width: 30px;height:30px;border-radius:50%;background-image:url(/img/quest_.png);background-size: contain;background-repeat: no-repeat;display:inline-block;"></span>
+                    </div>
+                </div>
+            </section>
+            <section class="c3">
+                <h2>Answers</h2>
+            </section>
+        </div>
+    </form>
+    <script>
+        var total_words = 0, selected_verse = [];
+        $(document).on("click", "p.verse", (ele) => {
+            var idxof = selected_verse.indexOf(ele.target);
+            if (idxof > -1) {
+                var torem = selected_verse.splice(idxof, 1);
+                total_words -= $(torem).html().split(' ').filter(t => t).length;
+                $(torem).removeClass("highlight");
+                console.log('removed...')
+            } else {
+                console.log('clicked...', $(ele.target).html())
+                total_words += $(ele.target).html().split(' ').filter(t => t).length;
+                if (total_words > 150) {
+                    var rem = selected_verse.splice(0, 1);
+                    if (rem) {
+                        total_words -= $(rem).html().split(' ').filter(t => t).length;
+                        $(rem).removeClass("highlight");
+                        console.log('higlight removed...')
+                    }
+                }
+                selected_verse.push(ele.target);
+                $(ele.target).addClass("highlight");
+                console.log('addedd...')
+            }
+            console.log(total_words, selected_verse);
+        })
+        var init_verse_selection = () => {
+            $("p.verse").toArray().reverse().forEach(t => {
+                $(t).click();
+            });
+        }
+        $(document).on("click", "#check", () => {
+            var ctxx = selected_verse.map(t => t.innerHTML).filter(t => t).map(t => t.trim()).join('.');
+            var qess = $(".question").toArray().map(t => t.innerHTML.trim() || $(t).attr("placeholder")).filter(t => t && t != 'Please add your question here');
+            $("p.answer").remove();
+            $.ajax({
+                type: "POST",
+                url: "/predict",
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify({ context: ctxx, question: qess }),
+                success: function (data) {
+                    console.log(data);
+                    (data.results || []).forEach(t => {
+                        $(".c3").append(`<p class='answer'>${t}</p>`)
+                    })
+                }
+            });
+        });
+        $(document).on("click", "#add-quest", () => {
+            var tst = `<div style="position:relative;">
+                                                                <p class="question" placeholder="Please add your question here" contenteditable="true"></p>
+                                                        <span class="rem-ques" style="cursor:pointer;position:absolute;top: 5px;right:5px;width: 20px;height:20px;border-radius:50%;background-image:url(/img/delete_.png);background-size: contain;background-repeat: no-repeat;display:inline-block;"></span>
+                                            </div>`;
+            $(".quest-cc").append(tst);
+        });
+        $(document).on("click", ".rem-ques", (ele) => {
+            $(ele.target).closest("div").remove();
+        })
+        $(document).on("change", "#book, #chapter", () => {
+
+        })
+        $(function () {
+            init_verse_selection();
+        })
+    </script>
+</body>
+</html>

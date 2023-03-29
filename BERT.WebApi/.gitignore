@@ -1,4 +1,6 @@
 Model/bertsquad8.onnx
+Model/bertsquad-12-int8.tar.gz
+Model/bible-sqlite.db
 obj/
 bin/
 Properties/PublishProfiles

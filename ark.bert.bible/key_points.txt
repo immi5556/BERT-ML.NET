@@ -1,0 +1,25 @@
+
+
+---sample question & answers capttured
+when shall he wash him with water?
+
+psalm 143: Teach me to do thy will
+
+who is to hear my prayer?
+
+
+psalm 148: 
+Whom should we praise?
+all his angels - Confidence Level (0.4791473) 
+totally incorrect answer
+
+
+Jonah 1:
+Where did JOnah go?
+joppa - Confidence Level (0.8814903)
+
+where was Jonah during storm? - wrong
+joppa - Confidence Level (0.63430214)
+
+where did Jonah decided to flee?
+tarshish - Confidence Level (0.5479346)

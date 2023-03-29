@@ -1,0 +1,10 @@
+https://1drv.ms/u/s!Alu0uzi9pf9UhMVjArzAsfZKagVR1g?e=ji52bA
+
+src 2
+https://github.com/onnx/models/blob/main/text/machine_comprehension/bert-squad/model/bertsquad-10.onnx
+
+deployed in host
+https://bert-bible.immanuel.co/models/bertsquad-10.onnx
+https://bert-bible.immanuel.co/models/bertsquad-12-int8.tar.gz
+https://bert-bible.immanuel.co/models/bible-sqlite.db
+
