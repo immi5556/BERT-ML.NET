@@ -36,7 +36,7 @@
                 <div>
                     @foreach (var v in (List<Book>)((Dictionary<int, List<Book>>)((Dictionary<string, Dictionary<int, List<Book>>>)ViewBag.Bible)[ViewBag.book])[ViewBag.chapter])
                     {
-                        <p class="verse">
+                        <p class="verse" data-vid="@v.id" data-book="@v.book" data-chapter="@v.c" data-verse="@v.v">
                             @v.t
                         </p>
                     }
@@ -103,12 +103,21 @@
         $(document).on("click", "#check", () => {
             var ctxx = selected_verse.map(t => t.innerHTML).filter(t => t).map(t => t.trim()).join('.');
             var qess = $(".question").toArray().map(t => t.innerHTML.trim() || $(t).attr("placeholder")).filter(t => t && t != 'Please add your question here');
+            var tosend = {
+                context: ctxx,
+                question: qess,
+                ip: window.my_ip,
+                ids: $("p.verse.highlight").toArray().map(t => $(t).data("vid")),
+                verses: $("p.verse.highlight").toArray().map(t => $(t).data("verse")),
+                chapters: [...new Set($("p.verse.highlight").toArray().map(t => $(t).data("chapter")))],
+                books: [...new Set($("p.verse.highlight").toArray().map(t => $(t).data("book")))]
+            };
             $("p.answer").remove();
             $.ajax({
                 type: "POST",
                 url: "/predict",
                 contentType: 'application/json;charset=UTF-8',
-                data: JSON.stringify({ context: ctxx, question: qess }),
+                data: JSON.stringify(tosend),
                 success: function (data) {
                     console.log(data);
                     (data.results || []).forEach(t => {
@@ -119,9 +128,9 @@
         });
         $(document).on("click", "#add-quest", () => {
             var tst = `<div style="position:relative;">
-                                                                <p class="question" placeholder="Please add your question here" contenteditable="true"></p>
-                                                        <span class="rem-ques" style="cursor:pointer;position:absolute;top: 5px;right:5px;width: 20px;height:20px;border-radius:50%;background-image:url(/img/delete_.png);background-size: contain;background-repeat: no-repeat;display:inline-block;"></span>
-                                            </div>`;
+                                                                                                                <p class="question" placeholder="Please add your question here" contenteditable="true"></p>
+                                                                                                        <span class="rem-ques" style="cursor:pointer;position:absolute;top: 5px;right:5px;width: 20px;height:20px;border-radius:50%;background-image:url(/img/delete_.png);background-size: contain;background-repeat: no-repeat;display:inline-block;"></span>
+                                                                                            </div>`;
             $(".quest-cc").append(tst);
         });
         $(document).on("click", ".rem-ques", (ele) => {
@@ -131,6 +140,10 @@
 
         })
         $(function () {
+            $.get("https://api.ipify.org/?format=json", function (response) {
+                //alert(response.ip);
+                window.my_ip = response.ip;
+            }, "json")
             init_verse_selection();
         })
     </script>

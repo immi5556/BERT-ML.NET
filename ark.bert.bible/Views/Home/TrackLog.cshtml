@@ -1,0 +1,55 @@
+﻿@{
+    Layout = null;
+}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Column-Drop</title>
+    <meta name="viewport" content="width=device-width,inicial-scale=1">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link href="~/css/track.css" rel="stylesheet" />
+</head>
+<body>
+    <select>
+        @foreach (var v in (List<string>)@ViewBag.Tracks)
+        {
+            <option value="@v">@v</option>
+        }
+    </select>
+    <br />
+    <table>
+        <caption>Track Log</caption>
+        <thead>
+            <tr>
+                <th>context</th>
+                <th>ids</th>
+                <th>verses</th>
+                <th>chapters</th>
+                <th>books</th>
+                <th>question</th>
+                <th>answers</th>
+                <th>confidence</th>
+                <th>ip</th>
+                <th>at</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var v in @ViewBag.TrackLog)
+            {
+                <tr>
+                    <td title="@v.context">@v.context</td>
+                    <td title="@v.ids">@v.ids</td>
+                    <td title="@v.verses">@v.verses</td>
+                    <td title="@v.chapters">@v.chapters</td>
+                    <td title="@v.books">@v.books</td>
+                    <td title="@v.question">@v.question</td>
+                    <td title="@v.answers">@v.answers</td>
+                    <td title="@v.confidence">@v.confidence</td>
+                    <td title="@v.ip">@v.ip</td>
+                    <td title="@v.at">@v.at</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
